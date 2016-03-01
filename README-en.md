@@ -1,82 +1,94 @@
 # PHP 7
 
-PHP 7 在 [December 3rd, 2015]
-(http://php.net/archive/2015.php#id2015-12-03-1) 发布了. 它带来了大量的新特性，改变和向后兼容破损，这些改变概述如下：
+PHP 7 was released on [December 3rd, 2015]
+(http://php.net/archive/2015.php#id2015-12-03-1). It comes
+with a number of new features, changes, and backwards compatibility breakages
+that are outlined below.
 
-**[性能](#性能)**
+**[Performance](#performance)**
 
-**[特性](#特性)**
-* [合并的比较操作符](#combined-comparison-operator)
-* [空指针合并操作符](#null-coalesce-operator)
-* [标量类型声明](#scalar-type-declarations)
-* [返回值类型声明](#return-type-declarations)
-* [匿名类](#anonymous-classes)
-* [Unicode编码点转移语法](#unicode-codepoint-escape-syntax)
-* [闭包 `call()` 方法](#closure-call-method)
-* [带过滤的 `unserialize()`](#filtered-unserialize)
-* [`IntlChar` 类](#intlchar-class)
-* [期望](#expectations)
-* [组和 `use` 声明](#group-use-declarations)
-* [生成器返回表达式](#generator-return-expressions)
-* [生成器委托](#generator-delegation)
-* [整形除使用 `intdiv()`](#integer-division-with-intdiv)
-* [`session_start()` 参数](#session_start-options)
-* [`preg_replace_callback_array()` 函数](#preg_replace_callback_array-function)
-* [CSPRNG 函数](#csprng-functions)
-* [支持 `define()` 定义数组常量](#support-for-array-constants-in-define)
-* [新增的反射类](#reflection-additions)
+**[Features](#features)**
+* [Combined Comparison Operator](#combined-comparison-operator)
+* [Null Coalesce Operator](#null-coalesce-operator)
+* [Scalar Type Declarations](#scalar-type-declarations)
+* [Return Type Declarations](#return-type-declarations)
+* [Anonymous Classes](#anonymous-classes)
+* [Unicode Codepoint Escape Syntax](#unicode-codepoint-escape-syntax)
+* [Closure `call()` Method](#closure-call-method)
+* [Filtered `unserialize()`](#filtered-unserialize)
+* [`IntlChar` Class](#intlchar-class)
+* [Expectations](#expectations)
+* [Group `use` Declarations](#group-use-declarations)
+* [Generator Return Expressions](#generator-return-expressions)
+* [Generator Delegation](#generator-delegation)
+* [Integer Division with `intdiv()`](#integer-division-with-intdiv)
+* [`session_start()` Options](#session_start-options)
+* [`preg_replace_callback_array()` Function](#preg_replace_callback_array-function)
+* [CSPRNG Functions](#csprng-functions)
+* [Support for Array Constants in `define()`](#support-for-array-constants-in-define)
+* [Reflection Additions](#reflection-additions)
 
-**[改动](#changes)**
-* [放松保留字的限制](#loosening-reserved-word-restrictions)
-* [同一变量格式](#uniform-variable-syntax)
-* [引擎中的异常](#exceptions-in-the-engine)
-* [可抛出的接口](#throwable-interface)
-* [整形语义](#integer-semantics)
-* [JSON 扩展替代 JSOND](#json-extension-replaced-with-jsond)
+**[Changes](#changes)**
+* [Loosening Reserved Word Restrictions](#loosening-reserved-word-restrictions)
+* [Uniform Variable Syntax](#uniform-variable-syntax)
+* [Exceptions in the Engine](#exceptions-in-the-engine)
+* [Throwable Interface](#throwable-interface)
+* [Integer Semantics](#integer-semantics)
+* [JSON Extension Replaced with JSOND](#json-extension-replaced-with-jsond)
 * [ZPP Failure on Overflow](#zpp-failure-on-overflow)
-* [修复 `foreach()`的行为](#fixes-to-foreachs-behaviour)
-* [修改 `list()`的行为](#changes-to-lists-behaviour)
-* [改变被0整除的语义](#changes-to-division-by-zero-semantics)
-* [修复自定义Session Handler返回值](#fixes-to-custom-session-handler-return-values)
-* [标记PHP 4风格的构造函数过期](#deprecation-of-php-4-style-constructors)
-* [移除 date.timezone 警告](#removal-of-datetimezone-warning)
-* [移除可替换PHP标签](#removal-of-alternative-php-tags)
-* [移除Switch语句中的多默认块](#removal-of-multiple-default-blocks-in-switch-statements)
-* [移除重复名字参数的重定义](#removal-of-redefinition-of-parameters-with-duplicate-names)
-* [移除Dead Server APIs](#removal-of-dead-server-apis)
-* [移除数字字符串中的十六进制支持](#removal-of-hex-support-in-numerical-strings)
-* [移除已标记过期的函数](#removal-of-deprecated-functionality)
-* [再分级与移除 E_STRICT 通知](#reclassification-and-removal-of-e_strict-notices)
-* [反对使用`password_hash()`的盐选项](#deprecation-of-salt-option-for-password_hash)
-* [无效的八进制字面量错误](#error-on-invalid-octal-literals)
-* [`substr()` 返回值改动](#substr-return-value-change)
+* [Fixes to `foreach()`'s Behaviour](#fixes-to-foreachs-behaviour)
+* [Changes to `list()`'s Behaviour](#changes-to-lists-behaviour)
+* [Changes to Division by Zero Semantics](#changes-to-division-by-zero-semantics)
+* [Fixes to Custom Session Handler Return Values](#fixes-to-custom-session-handler-return-values)
+* [Deprecation of PHP 4-Style Constructors](#deprecation-of-php-4-style-constructors)
+* [Removal of date.timezone Warning](#removal-of-datetimezone-warning)
+* [Removal of Alternative PHP Tags](#removal-of-alternative-php-tags)
+* [Removal of Multiple Default Blocks in Switch Statements](#removal-of-multiple-default-blocks-in-switch-statements)
+* [Removal of Redefinition of Parameters with Duplicate Names](#removal-of-redefinition-of-parameters-with-duplicate-names)
+* [Removal of Dead Server APIs](#removal-of-dead-server-apis)
+* [Removal of Hex Support in Numerical Strings](#removal-of-hex-support-in-numerical-strings)
+* [Removal of Deprecated Functionality](#removal-of-deprecated-functionality)
+* [Reclassification and Removal of E_STRICT Notices](#reclassification-and-removal-of-e_strict-notices)
+* [Deprecation of Salt Option for `password_hash()`](#deprecation-of-salt-option-for-password_hash)
+* [Error on Invalid Octal Literals](#error-on-invalid-octal-literals)
+* [`substr()` Return Value Change](#substr-return-value-change)
 
 **[FAQ](#faq)**
- * [PHP 6发生了什么?](#what-happened-to-php-6)
+ * [What happened to PHP 6?](#what-happened-to-php-6)
 
-## 性能
-毫无争议，PHP 7带来的最大的变化就是极大的性能提升，这得益于对Zend引擎的重构，新的引擎使用了更加紧凑的数据结构和更少的堆分配/回收操作。
+## Performance
 
-在实际项目使用中，性能的提升效果不是固定的，虽然很多应用在使用PHP 7之后活的了超过100%的性能加速，同时还只使用更少的内存消耗！
+Unarguably the greatest part about PHP 7 is the incredible performance boosts
+it provides to applications. This is a result of refactoring the Zend Engine to
+use more compact data structures and less heap allocations/deallocations.
 
-重构后的代码基础也为将来的优化（比如JIT编译）提供了更多的可能，所以，可以预计在接下来的PHP版本仍然会看到不错的性能提升。
+The performance gains on real world applications will vary, though many
+applications seem to receive a ~100% performance boost - with lower memory
+consumption too!
 
-PHP 7性能对比图标：
+The refactored codebase provides further opportunities for future optimisations
+as well (such as JIT compilation). So it looks like future PHP versions will
+continue to see performance enhancements too.
 
-
+PHP 7 performance chart comparisons:
  - [Turbocharging the Web with PHP 7](https://www.zend.com/en/resources/php7_infographic)
  - [Benchmarks from Rasmus's Sydney Talk](http://talks.php.net/oz15#/drupalbench)
 
-## 特性
+## Features
 
-### 组合比较操作符
-组合比较符（也称太空船操作符）用于对两个操作数进行三路比较的简化符号，它返回一个整数，其值为以下之一：
+### Combined Comparison Operator
+The combined comparison operator (or spaceship operator) is a shorthand
+notation for performing three-way comparisons from two operands. It has an
+integer return value that can be either:
 
-* 一个正整数（当左操作数大于右操作数时）
-* 0（当两个操作数相等时）
-* 一个负整数（当右操作数大于左操作数时）
+* a positive integer (if the left-hand operand is greater than the right-hand operand)
+* 0 (if both operands are equal)
+* a negative integer (if the right-hand operand is greater than the left-hand operand)
 
-该操作符和等式运算符（`==`，`！=`，`===`，`！==`）等有相同的优先级，并且和其它松比较操作符（`<`, `>=`等）有相同的行为，同样组合比较付也是非组合的，不允许对操作数进行链式调用（像 `1 <=> 2 <=> 3`）。
+The operator has the same precedence as the equality operators (`==`, `!=`,
+`===`, `!==`) and has the exact same behaviour as the other loose comparison
+operators (`<`, `>=`, etc). It is also non-associative like them too, so
+chaining of the operands (like `1 <=> 2 <=> 3`) is not allowed.
 
 ```PHP
 // compares strings lexically
@@ -89,31 +101,37 @@ var_dump(123 <=> 456); // int(-1)
 var_dump(['a', 'b'] <=> ['a', 'b']); // int(0)
 ```
 
-对象是不可比较的，所以对对象使用组合比较符会导致未定义的行为。
+Objects are not comparable, and so using them as operands with this operator
+will result in undefined behaviour.
 
 RFC: [Combined Comparison Operator](https://wiki.php.net/rfc/combined-comparison-operator)
 
-### 空引用合并操作符
-空引用合并操作符（或者称isset三元操作符）是`isset()`检测的三元操作符的简化符号。空引用检测在应用中是经常需要的操作，为了这个目的引入了这个新的语法
+### Null Coalesce Operator
+The null coalesce operator (or isset ternary operator) is a shorthand notation
+for performing `isset()` checks in the ternary operator. This is a common thing
+to do in applications, and so a new syntax has been introduced for this exact
+purpose.
 
 ```PHP
-// PHP 7 之前
+// Pre PHP 7 code
 $route = isset($_GET['route']) ? $_GET['route'] : 'index';
 
-// PHP 7+ 
+// PHP 7+ code
 $route = $_GET['route'] ?? 'index';
 ```
 
-> 这有点类似于其他语言的 `?:` 合并操作符
-
-
 RFC: [Null Coalesce Operator](https://wiki.php.net/rfc/isset_ternary)
 
-### 标量类型声明
-标量类型声明有两种模式： **强制**（默认）和**严格**。下面类型的参数现在能够强制执行（无论是强制模式还是严格模式）：字符串（`string`），整数(`int`），浮点数（`float`），以及布尔值（`bool`）。它们扩充了PHP 5中引入的其他类型：类名（class names），接口(interfaces)，数组(`array`)和回调(`callable`)类型。
+### Scalar Type Declarations
+Scalar type declarations come in two flavours: **coercive** (default) and
+**strict**. The following types for parameters can now be enforced (either
+coercively or strictly): strings (`string`), integers (`int`), floating-point
+numbers (`float`), and booleans (`bool`). They augment the other types
+introduced in the PHP 5.x versions: class names, interfaces, `array` and
+`callable`.
 
 ```PHP
-// 强制模式 
+// Coercive mode
 function sumOfInts(int ...$ints)
 {
     return array_sum($ints);
@@ -122,9 +140,17 @@ function sumOfInts(int ...$ints)
 var_dump(sumOfInts(2, '3', 4.1)); // int(9)
 ```
 
-要使用严格模式，一个 `declare()`声明指令必须放在文件的顶部，这意味着声明严格标量是基于文件可配置的。这个指令不仅影响参数的类型声明，也影响到函数的返回值声明（参考[返回值类型声明](返回值类型声明)，内置的PHP函数以及扩展中加载的函数）。
+To enable strict mode, a single `declare()` directive must be placed at the top
+of the file. This means that the strictness of typing for scalars is configured
+on a per-file basis. This directive not only affects the type declarations of
+parameters, but also a function's return type (see [Return Type
+Declarations](#return-type-declarations)), built-in PHP functions, and
+functions from loaded extensions.
 
-如果类型检查失败了，一个 `TypeError`异常会（见[引擎中的异常](#引擎中的异常)）抛出，在严格模式下，唯一的例外是，当整数当作一个浮点数提供到上下文时，整数到浮点数的自动类型转换（反过来不允许）。
+If the type-check fails, then a `TypeError` exception (see [Exceptions in the
+Engine](#exceptions-in-the-engine)) is thrown. The only leniency present in
+strict typing is the automatic conversion of integers to floats (but not
+vice-versa) when an integer is provided in a float context.
 
 ```PHP
 declare(strict_types=1);
@@ -143,18 +169,23 @@ var_dump(multiply(2, 3.5)); // float(7)
 var_dump(add('2', 3)); // Fatal error: Uncaught TypeError: Argument 1 passed to add() must be of the type integer, string given...
 ```
 
-注意，**只有**在*调用上下文*执行类型检查时才会适用这些规则，这意味着严格类型检查只在函数/方法调用时使用，而在它们的定义处不使用。在上面的例子中，两个函数可以定义在严格或者强制模式的文件中，但是，只要是它们在声明了严格模式的文件中被调用，就会使用严格类型规则。
+Note that **only** the *invocation context* applies when the type-checking is
+performed. This means that the strict typing applies only to function/method
+calls, and not to the function/method definitions. In the above example, the
+two functions could have been declared in either a strict or coercive file, but
+so long as they're being called in a strict file, then the strict typing rules
+will apply.
 
 **BC Breaks**
- - 现在 `int`, `string`, `float`, and `bool` 不再允许作为类名出现。
-
+ - Classes with names `int`, `string`, `float`, and `bool` are now forbidden.
 
 RFC: [Scalar Type Declarations](https://wiki.php.net/rfc/scalar_type_hints_v5)
 
-### 返回值类型声明
-返回类型声明允许为函数，方法或者闭包指定返回值的类型了，支持下列作为返回值类型： `string`,
-`int`, `float`, `bool`, `array`, `callable`, `self` (仅方法), `parent`
-(仅方法), `Closure`, 类名和接口名。
+### Return Type Declarations
+Return type declarations enable for the return type of a function, method, or
+closure to be specified. The following return types are supported: `string`,
+`int`, `float`, `bool`, `array`, `callable`, `self` (methods only), `parent`
+(methods only), `Closure`, the name of a class, and the name of an interface.
 
 ```PHP
 function arraysSum(array ...$arrays): array
@@ -175,7 +206,10 @@ Array
 */
 ```
 
-在子类化的情况下，返回值类型必须是不变的。这意味着一个方法被子类重写或者被实现时，它的返回值类型必须和父类中的类型完全匹配。
+With respect to subtyping, **invariance** has been chosen for return types.
+This simply means that when a method is either overridden in a subtyped class
+or implemented as defined in a contract, its return type must match exactly the
+method it is (re)implementing.
 
 ```PHP
 class A {}
@@ -199,7 +233,9 @@ class D extends C
 }
 ```
 
-覆盖的方法 `D::test() : B`导致了一个 `E_COMPILE_ERROR`，因为返回值类型不允许修改，`D::test()`方法必须使用返回值类型为 `A`。
+The overriding method `D::test() : B` causes an `E_COMPILE_ERROR` because
+covariance is not allowed. In order for this to work, `D::test()` method must
+have a return type of `A`.
 
 ```PHP
 class A {}
@@ -218,16 +254,19 @@ class B implements SomeInterface
 }
 ```
 
-这一次，实现的方法在执行时抛出了 `TypeError` 异常（参见 [引擎中的异常](#引擎中的异常)），这是因为 `null` 不是一个正确的返回类型的值，只有类A的实例作为返回值才是允许的。
+This time, the implemented method causes a `TypeError` exception (see
+[Exceptions in the Engine](#exceptions-in-the-engine)) to be thrown when
+executed. This is because `null` is not a valid return type - only an instance of the
+class `A` can be returned.
 
 RFC: [Return Type Declarations](https://wiki.php.net/rfc/return_types)
 
-### 匿名类
+### Anonymous Classes
 
-在简单的，没有对象实例要创建的时候，匿名类是非常有用的。
+Anonymous classes are useful when simple, one-off objects need to be created.
 
 ```PHP
-// PHP 7 之前
+// Pre PHP 7 code
 class Logger
 {
     public function log($msg)
@@ -238,7 +277,7 @@ class Logger
 
 $util->setLogger(new Logger());
 
-// PHP 7+ 
+// PHP 7+ code
 $util->setLogger(new class {
     public function log($msg)
     {
@@ -247,8 +286,8 @@ $util->setLogger(new class {
 });
 ```
 
-同样可以传递参数到匿名类的构造函数，继承其它类或者实现某些接口，还可以像普通类一样使用 traits：
-
+They can pass arguments through to their constructors, extend other classes,
+implement interfaces, and use traits just like a normal class can:
 ```PHP
 class SomeClass {}
 interface SomeInterface {}
@@ -273,8 +312,11 @@ object(class@anonymous)#1 (1) {
 */
 ```
 
-在一个类中嵌套的匿名类没有对外部类的私有或者受保护的字段和方法的访问权限。为了使用外部类的 protected属性或者方法，匿名类可以通过继承外部类实现。为了使用外部类的私有的或者受保护的属性或方法，需要将外部类作为匿名类的构造函数的参数：
-
+Nesting an anonymous class within another class does not give it access to any
+private or protected methods or properties of that outer class. In order to use
+the outer class' protected properties or methods, the anonymous class can
+extend the outer class. To use the private or protected properties of the outer
+class in the anonymous class, they must be passed through its constructor:
 ```PHP
 <?php
 
@@ -311,10 +353,11 @@ echo (new Outer)->func2()->func3(); // 6
 
 RFC: [Anonymous Classes](https://wiki.php.net/rfc/anonymous_classes)
 
-### Unicode编码点转义语法
+### Unicode Codepoint Escape Syntax
 
-这可以打印一个使用双引号或者heredoc包围的UTF-8编码的Unicode编码点（codepoint）。可以接受任何有效的codepoint，并且先导的 `0`是可以省略的。
-
+This enables a UTF-8 encoded unicode codepoint to be output in either a
+double-quoted string or a heredoc. Any valid codepoint is accepted, with
+leading `0`'s being optional.
 
 ```PHP
 echo "\u{aa}"; // ª
@@ -324,29 +367,33 @@ echo "\u{9999}"; // 香
 
 RFC: [Unicode Codepoint Escape Syntax](https://wiki.php.net/rfc/unicode_escape)
 
-### Closure::call()
+### Closure call() Method
 
-闭包的新的 `call()`方法是用于简单干练地绑定一个方法到对象上闭包并调用它。新的方法有更好的性能并且省去了在调用前创建一个中间闭包的代码，使代码更加紧凑。
-
+The new `call()` method for closures is used as a shorthand way of invoking a
+closure whilst binding an object scope to it. This creates more perfomant and
+compact code by removing the need to create an intermediate closure before
+invoking it.
 
 ```PHP
 class A {private $x = 1;}
 
-// PHP 7 之前
+// Pre PHP 7 code
 $getXCB = function() {return $this->x;};
 $getX = $getXCB->bindTo(new A, 'A'); // intermediate closure
 echo $getX(); // 1
 
-// PHP 7+ 
+// PHP 7+ code
 $getX = function() {return $this->x;};
 echo $getX->call(new A); // 1
 ```
 
 RFC: [Closure::call](https://wiki.php.net/rfc/closure_apply)
 
-### 带过滤的 `unserialize()`
+### Filtered `unserialize()`
 
-这个特性旨在为反序列化不可信数据时提供更好的安全性。它通过允许开发者以白名单的形式来规定可以反序列化的类，以此防止潜在的代码注入。
+This feature seeks to provide better security when unserializing objects on
+untrusted data. It prevents possible code injections by enabling the developer
+to whitelist classes that can be unserialized.
 
 ```PHP
 // converts all objects into __PHP_Incomplete_Class object
@@ -361,9 +408,11 @@ $data = unserialize($foo, ["allowed_classes" => true]);
 
 RFC: [Filtered unserialize()](https://wiki.php.net/rfc/secure_unserialize)
 
-### `IntlChar` 类
+### `IntlChar` Class
 
-新的 `IntChar` 类型旨在暴露更多的ICU功能，这个类自身定义了许多静态方法用于操作多字符集的unicode字符。
+The new `IntlChar` class seeks to expose additional ICU functionality. The
+class itself defines a number of static methods and constants that can be used
+to manipulate unicode characters.
 
 ```PHP
 printf('%x', IntlChar::CODEPOINT_MAX); // 10ffff
@@ -371,23 +420,28 @@ echo IntlChar::charName('@'); // COMMERCIAL AT
 var_dump(IntlChar::ispunct('!')); // bool(true)
 ```
 
-为了使用这个类，必须安装 `Intl`扩展。
+In order to use this class, the `Intl` extension must be installed.
 
 **BC Breaks**
  - Classes in the global namespace must not be called `IntlChar`.
 
 RFC: [IntlChar class](https://wiki.php.net/rfc/intl.char)
 
-### 预期
+### Expectations
 
-预期是向后兼容并增强之前的 `assert()`函数。它使得在生产环境中启用断言的成本为零，并且提供当断言失败时抛出特定异常的能力。
+Expectations are backwards compatible enhancement to the older `assert()`
+function. They enable for zero-cost assertions in production code, and provide
+the ability to throw custom exceptions on error.
 
-`assert()`函数的原型如下
-
+The `assert()` function's prototype is as follows:
 ```
 void assert (mixed $expression [, mixed $message]);
 ```
-在旧的API中，如果 `$expression`是一个字符串，那么它会被计算，如果第一个参数falsy，那么断言失败。第二个参数可以是一个字符串（导致触发一个 AssertionError）或者是一个包含错误消息的自定义异常对象。
+
+As with the old API, if `$expression` is a string, then it will be evaluated.
+If the first argument is falsy, then the assertion fails. The second argument
+can either be a plain string (causing an AssertionError to be triggered),
+or a custom exception object containing an error message.
 
 ```PHP
 ini_set('assert.exception', 1);
@@ -397,17 +451,18 @@ class CustomError extends AssertionError {}
 assert(false, new CustomError('Some error message'));
 ```
 
-这个特性与 PHP.ini 中的两个设置有关
-
+With this feature comes two PHP.ini settings (along with their default values):
  - zend.assertions = 1
  - assert.exception = 0
 
-**zend.assertions** 有三个值:
- - **1** = 生产并执行代码 (开发模式)
- - **0** = 生成代码并在执行时跳过
- - **-1** = 不生产代码 (零开销, 生产模式)
+**zend.assertions** has three values:
+ - **1** = generate and execute code (development mode)
+ - **0** = generate code and jump around at it at runtime
+ - **-1** = don't generate any code (zero-cost, production mode)
 
-**assert.exception** 意味着断言失败时抛出一个异常，为了与旧的 `assert()`函数保持兼容，此选项默认是关闭的。
+**assert.exception** means that an exception is thrown when an assertion fails.
+This is switched off by default to remain compatible with the old `assert()`
+function.
 
 RFC: [Expectations](https://wiki.php.net/rfc/expectations)
 
