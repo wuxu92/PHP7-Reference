@@ -2,59 +2,60 @@
 
 > 来自英文版：[https://github.com/tpunt/PHP7-Reference](https://github.com/tpunt/PHP7-Reference)
 
-PHP 7 在 [December 3rd, 2015]
-(http://php.net/archive/2015.php#id2015-12-03-1) 发布了. 它带来了大量的新特性，改变和向后兼容破损，这些改变概述如下：
+PHP 7 在 [2015年十二月3日]
+(http://php.net/archive/2015.php#id2015-12-03-1) 发布了. 它带来了大量的新特性，改变和一些向后兼容损坏（backwards compatibility breakages），这些改变概述如下：
+
 
 **[性能](#性能)**
 
 **[特性](#特性)**
 * [组合比较操作符](#组合比较操作符)
-* [空指针合并操作符](#null-coalesce-operator)
-* [标量类型声明](#scalar-type-declarations)
-* [返回值类型声明](#return-type-declarations)
-* [匿名类](#anonymous-classes)
-* [Unicode编码点转移语法](#unicode-codepoint-escape-syntax)
-* [闭包 `call()` 方法](#closure-call-method)
-* [带过滤的 `unserialize()`](#filtered-unserialize)
-* [`IntlChar` 类](#intlchar-class)
-* [期望](#expectations)
+* [空指针合并操作符](#空引用合并操作符)
+* [标量类型声明](#标量类型声明)
+* [返回值类型声明](#返回值类型声明)
+* [匿名类](#匿名类)
+* [Unicode编码点转移语法](#unicode编码点转义语法)
+* [闭包 `call()` 方法](#closurecall)
+* [带过滤的 `unserialize()`](#带过滤的-unserialize)
+* [`IntlChar` 类](#intlchar-类)
+* [期望](#预期)
 * [组和 `use` 声明](#group-use-declarations)
-* [生成器返回表达式](#generator-return-expressions)
-* [生成器委托](#generator-delegation)
-* [整形除使用 `intdiv()`](#integer-division-with-intdiv)
-* [`session_start()` 参数](#session_start-options)
-* [`preg_replace_callback_array()` 函数](#preg_replace_callback_array-function)
-* [CSPRNG 函数](#csprng-functions)
-* [支持 `define()` 定义数组常量](#support-for-array-constants-in-define)
-* [新增的反射类](#reflection-additions)
+* [生成器返回表达式](#生成器返回表达式)
+* [生成器委托](#生成器委托)
+* [整形除使用 `intdiv()`](#使用-intdiv-做整数除法)
+* [`session_start()` 参数](#session_start-选项)
+* [`preg_replace_callback_array()` 函数](#preg_replace_callback_array-函数)
+* [CSPRNG 函数](#csprng密码学安全伪随机数构建器函数)
+* [支持 `define()` 定义数组常量](#支持-define-定义数组常量)
+* [新增的反射类](#反射增强)
 
-**[改动](#改变)**
-* [放松保留字的限制](#loosening-reserved-word-restrictions)
-* [同一变量格式](#uniform-variable-syntax)
-* [引擎中的异常](#exceptions-in-the-engine)
-* [可抛出的接口](#throwable-interface)
-* [整形语义](#integer-semantics)
-* [JSON 扩展替代 JSOND](#json-extension-replaced-with-jsond)
-* [ZPP Failure on Overflow](#zpp-failure-on-overflow)
-* [修复 `foreach()`的行为](#fixes-to-foreachs-behaviour)
-* [修改 `list()`的行为](#changes-to-lists-behaviour)
-* [改变被0整除的语义](#changes-to-division-by-zero-semantics)
-* [修复自定义Session Handler返回值](#fixes-to-custom-session-handler-return-values)
-* [标记PHP 4风格的构造函数过期](#deprecation-of-php-4-style-constructors)
-* [移除 date.timezone 警告](#removal-of-datetimezone-warning)
-* [移除可替换PHP标签](#removal-of-alternative-php-tags)
-* [移除Switch语句中的多默认块](#removal-of-multiple-default-blocks-in-switch-statements)
-* [移除重复名字参数的重定义](#removal-of-redefinition-of-parameters-with-duplicate-names)
-* [移除Dead Server APIs](#removal-of-dead-server-apis)
-* [移除数字字符串中的十六进制支持](#removal-of-hex-support-in-numerical-strings)
-* [移除已标记过期的函数](#removal-of-deprecated-functionality)
+**[改动](#改变**
+* [放松保留字的限制](#放松保留字的限制)
+* [同一变量格式](#统一变量语法)
+* [引擎中的异常](#引擎中的异常)
+* [可抛出的接口](#可抛出的接口)
+* [整形语义](#整数语义)
+* [JSON 扩展替代 JSOND](#jsond替代了json扩展)
+* [ZPP Failure on Overflow](#zpp-溢出时失败)
+* [修复 `foreach()`的行为](#修正-foreach-的行为)
+* [修改 `list()`的行为](#修改-list-的行为)
+* [改变被0整除的语义](#改变除数为0的语义)
+* [修复自定义Session Handler返回值](#修复自定义session-handler的返回值)
+* [标记PHP 4风格的构造函数过期](#返回只用php-4风格的构造函数)
+* [移除 date.timezone 警告](#移除datetimezone的警告)
+* [移除可替换PHP标签](#去除可替代的php标签)
+* [移除Switch语句中的多默认块](#移除switch语句中的多默认块)
+* [移除重复名字参数的重定义](#移除参数列表中重名参数的重定义)
+* [移除Dead Server APIs](#移除已经dead的服务器api)
+* [移除数字字符串中的十六进制支持](#移除数字字符串的十六进制支持)
+* [移除已标记过期的函数](#移除过期的功能)
 * [再分级与移除 E_STRICT 通知](#reclassification-and-removal-of-e_strict-notices)
-* [反对使用`password_hash()`的盐选项](#deprecation-of-salt-option-for-password_hash)
-* [无效的八进制字面量错误](#error-on-invalid-octal-literals)
-* [`substr()` 返回值改动](#substr-return-value-change)
+* [反对使用`password_hash()`的盐选项](#为password_hash函数设置盐的选项过期)
+* [无效的八进制字面量错误](#无效的八进制字面量的错误)
+* [`substr()` 返回值改动](#substr返回值修改)
 
-**[FAQ](#faq)**
- * [PHP 6发生了什么?](#PHP-6发生了什么)
+**[FAQ](#faq)
+ * [PHP 6发生了什么?](#php-6发生了什么)
 
 ## 性能
 毫无争议，PHP 7带来的最大的变化就是极大的性能提升，这得益于对Zend引擎的重构，新的引擎使用了更加紧凑的数据结构和更少的堆分配/回收操作。
@@ -78,7 +79,7 @@ PHP 7性能对比图标：
 * 0（当两个操作数相等时）
 * 一个负整数（当右操作数大于左操作数时）
 
-该操作符和等式运算符（`==`，`！=`，`===`，`！==`）等有相同的优先级，并且和其它松比较操作符（`<`, `>=`等）有相同的行为，同样组合比较付也是非组合的，不允许对操作数进行链式调用（像 `1 <=> 2 <=> 3`）。
+该操作符和等式运算符（`==`，`!=`，`===`，`!==`）等有相同的优先级，并且和其它松比较操作符（`<`, `>=`等）有相同的行为，同样组合比较付也是非组合的，不允许对操作数进行链式调用（像 `1 <=> 2 <=> 3`）。
 
 ```PHP
 // compares strings lexically
@@ -102,7 +103,7 @@ RFC: [Combined Comparison Operator](https://wiki.php.net/rfc/combined-comparison
 // PHP 7 之前
 $route = isset($_GET['route']) ? $_GET['route'] : 'index';
 
-// PHP 7+ 
+// PHP 7+
 $route = $_GET['route'] ?? 'index';
 ```
 
@@ -115,7 +116,7 @@ RFC: [Null Coalesce Operator](https://wiki.php.net/rfc/isset_ternary)
 标量类型声明有两种模式： **强制**（默认）和**严格**。下面类型的参数现在能够强制执行（无论是强制模式还是严格模式）：字符串（`string`），整数(`int`），浮点数（`float`），以及布尔值（`bool`）。它们扩充了PHP 5中引入的其他类型：类名（class names），接口(interfaces)，数组(`array`)和回调(`callable`)类型。
 
 ```PHP
-// 强制模式 
+// 强制模式
 function sumOfInts(int ...$ints)
 {
     return array_sum($ints);
@@ -240,7 +241,7 @@ class Logger
 
 $util->setLogger(new Logger());
 
-// PHP 7+ 
+// PHP 7+
 $util->setLogger(new class {
     public function log($msg)
     {
@@ -339,7 +340,7 @@ $getXCB = function() {return $this->x;};
 $getX = $getXCB->bindTo(new A, 'A'); // intermediate closure
 echo $getX(); // 1
 
-// PHP 7+ 
+// PHP 7+
 $getX = function() {return $this->x;};
 echo $getX->call(new A); // 1
 ```
@@ -431,7 +432,7 @@ use const some\namespace\ConstA;
 use const some\namespace\ConstB;
 use const some\namespace\ConstC;
 
-// PHP 7+ 
+// PHP 7+
 use some\namespace\{ClassA, ClassB, ClassC as C};
 use function some\namespace\{fn_a, fn_b, fn_c};
 use const some\namespace\{ConstA, ConstB, ConstC};
@@ -1092,7 +1093,7 @@ function foo($version, $version)
 }
 
 echo foo(5, 7);
-  
+
 // Pre PHP 7 result
 7
 
@@ -1211,7 +1212,7 @@ RFC: no RFC available
 
 ### `substr()`返回值修改
 
-当进行截断的开始位置等于字符的长度时，`substr()`现在将返回一个空的字符串而不是`false`。 
+当进行截断的开始位置等于字符的长度时，`substr()`现在将返回一个空的字符串而不是`false`。
 
 ```PHP
 var_dump(substr('a', 1));
