@@ -1,12 +1,14 @@
 # PHP 7
 
+> 来自英文版：[https://github.com/tpunt/PHP7-Reference](https://github.com/tpunt/PHP7-Reference)
+
 PHP 7 在 [December 3rd, 2015]
 (http://php.net/archive/2015.php#id2015-12-03-1) 发布了. 它带来了大量的新特性，改变和向后兼容破损，这些改变概述如下：
 
 **[性能](#性能)**
 
 **[特性](#特性)**
-* [合并的比较操作符](#combined-comparison-operator)
+* [组合比较操作符](#组合比较操作符)
 * [空指针合并操作符](#null-coalesce-operator)
 * [标量类型声明](#scalar-type-declarations)
 * [返回值类型声明](#return-type-declarations)
@@ -52,7 +54,7 @@ PHP 7 在 [December 3rd, 2015]
 * [`substr()` 返回值改动](#substr-return-value-change)
 
 **[FAQ](#faq)**
- * [PHP 6发生了什么?](#what-happened-to-php-6)
+ * [PHP 6发生了什么?](#PHP-6发生了什么)
 
 ## 性能
 毫无争议，PHP 7带来的最大的变化就是极大的性能提升，这得益于对Zend引擎的重构，新的引擎使用了更加紧凑的数据结构和更少的堆分配/回收操作。
@@ -774,15 +776,10 @@ RFC: [Exceptions in the Engine](https://wiki.php.net/rfc/engine_exceptions_for_p
 
 ### 可抛出的接口
 
-This change affects PHP's exception hierarchy due to the introduction of
-[exceptions in the engine](#exceptions-in-the-engine). Rather than placing
-fatal and recoverable fatal errors under the pre-existing `Exception` class
-hierarchy, [it was
-decided](https://wiki.php.net/rfc/engine_exceptions_for_php7#doodle__form__introduce_and_use_baseexception)
-to implement a new hierarchy of exceptions to prevent PHP 5.x code from
-catching these new exceptions with catch-all (`catch (Exception $e)`) clauses.
+因为引入了[引擎中的异常](#引擎中的异常)，这一改变影响了PHP的异常层次结构。这不是简单地将致命的和可会度的致命错误替换为已经存在的`Exception`类层次结构，而是实现了一个新的一个新的层次结构以防止PHP 5.x的代码中的全部捕捉（catch-all：`catch (Exception $e)`）子句会捕捉到这种新的异常。
 
-The new exception hierarchy is as follows:
+新的异常层次如下：
+
 ```
 interface Throwable
     |- Exception implements Throwable
@@ -795,8 +792,8 @@ interface Throwable
             |- DivisionByZeroError extends ArithmeticError
 ```
 
-The `Throwable` interface is implemented by both `Exception` and `Error` base
-class hierarchies and defines the following contract:
+这里的 `Throwable`接口被 `Exception` 和 `Error`积累实现，接口的定义如下：
+
 ```
 interface Throwable
 {
@@ -810,72 +807,51 @@ interface Throwable
 }
 ```
 
-`Throwable` cannot be implemented by user-defined classes - instead, a custom
-exception class should extend one of the pre-existing exceptions classes in
-PHP.
+`Throwable` 不能被用户定义的类实现，一个用户定义的异常类应该继承之前的PHP版本中就已经存在的异常类。
 
 RFC: [Throwable Interface](https://wiki.php.net/rfc/throwable-interface)
 
-### Integer Semantics
+### 整数语义
 
-The semantics for some integer-based behaviour has changed in an effort to make
-them more intuitive and platform-independent. Here is a list of those changes:
- - Casting `NAN` and `INF` to an integer will always result in 0
- - Bitwise shifting by a negative number of bits is now disallowed (causes a
-   bool(false) return and emits an E_WARNING)
- - Left bitwise shifts by a number of bits beyond the bit width of an integer will always result in 0
- - Right bitwise shifts by a number of bits beyond the bit width of an integer
-   will always result in 0 or -1 (sign dependent)
+为了使更加符合直觉和平台独立，一些基于整数的行为的语言发生了变化。下面是这些改变的列表：
+
+ - 将 `NAN` 和 `INF` 转换为整数将总是返回0。
+ - 位移操作现在禁止使用负数。(将会返回一个 bool(false)并触发一个 E_WARNING）
+ - 按位左移的位数超过了整数的位数将总是返回0。
+ - 按位右移的位数超过了整数的位数将总是返回0或者-1(视整数符号而定)
 
 **BC Breaks**
- - Any reliance on the old semantics for the above will no longer work
+ - 任何依赖于上面的旧的语义的代码将不能工作。
 
 RFC: [Integer Semantics](https://wiki.php.net/rfc/integer_semantics)
 
-### JSON Extension Replaced with JSOND
+### JSOND替代了JSON扩展
 
-The licensing of the old JSON extension was regarded as non-free, causing
-issues for many Linux-based distributions. The extension has since been
-replaced with JSOND and comes with some [performance
-gains](https://github.com/bukka/php-jsond-bench/blob/master/reports/0001/summary.md)
-and backward compatibility breakages.
+旧的的JSON扩展的许可不再是自由的（non-free），在基于Linux的发布版本中导致了很多问题。该扩展现在已经被JSOND替代，新的JSOND有一定的[性能提升](https://github.com/bukka/php-jsond-bench/blob/master/reports/0001/summary.md)，同时导致一些向后兼容问题。
 
 **BC Breaks**
- - A number *must not* end in a decimal point (i.e. `34.` must be changed to either `34.0` or just `34`)
- - The `e` exponent *must not* immediately follow the decimal point (i.e.
-   `3.e3` must be changed to either `3.0e3` or just `3e3`)
+ - 数据不能以小数点结束 (比如 `34.` 必须修改为 `34.0` 或者 `34`)
+ - 指数 `e` 不能紧跟在小数点后面(比如 `3.e3` 必须修改为 `3.0e3` 或者 `3e3`)
 
 RFC: [Replace current json extension with jsond](https://wiki.php.net/rfc/jsond)
 
-### ZPP Failure on Overflow
+### ZPP 溢出时失败
 
-Coercion between floats to integers can occur when a float is passed to an
-internal function expecting an integer. If the float is too large to represent
-as an integer, then the value will be silently truncated (which may result in a
-loss of magnitude and sign). This can introduce hard-to-find bugs. This change
-therefore seeks to notify the developer when an implicit conversion from a
-float to an integer has occurred and failed by returning `null` and emitting an
-E_WARNING.
+当讲一个浮点数作为参数传递给一个期待整数的函数时，会进行浮点数到整数的强制转换。如果浮点数的值过大，将会被默认（silently）进行截断（这可能导致符号和精度的损失）。这可能导致一些很难发现的bug。这个改动就是为了当发生从浮点数到整数的隐式类型转换时提醒开发者，如果转换失败会返回`null`并触发一个`E_WARNING`。
 
 **BC Breaks**
- - Code that once silently worked will now emit an E_WARNING and may fail if
-   the result of the function invocation is directly passed to another function
-(since `null` will now be passed in).
+ - 那些在旧版本PHP能工作的代码现在可能会触发 E_WARNING异常并并导致失败，如果类型转换的结果直接被传递给其他函数的话（因为现在的版本在转换失败时返回null）。
 
 RFC: [ZPP Failure on Overflow](https://wiki.php.net/rfc/zpp_fail_on_overflow)
 
-### Fixes to `foreach()`'s Behaviour
+### 修正 `foreach()` 的行为
 
-PHP's `foreach()` loop had a number of strange edge-cases to it. These were all
-implementation-driven and caused a lot of undefined and inconsistent behaviour
-when iterating between copies and references of an array, when using iterator
-manipulators like `current()` and `reset()`, when modifying the array currently
-being iterated, and so on.
+PHP的　`foreach()`循环有很多奇怪的边缘条件，这些都是实现驱动的，这导致在迭代数组的拷贝或者引用时，如果使用迭代修改操作如`current()` 和 `reset()`，或者修改正在迭代的数组，会有很多未定义的和不一致的行为。
 
-This change eliminates the undefined behaviour of these edge-cases and makes
-the semantics more predictable and intuitive.
+这一修改会消除边界条件的未定义行为，并且使得语义更加可预测和直观。
 
-`foreach()` by value on arrays
+`foreach()` 按值遍历数组
+
 ```PHP
 $array = [1,2,3];
 $array2 = &$array;
@@ -885,21 +861,20 @@ foreach($array as $val) {
     echo "{$val} - ", current($array), PHP_EOL;
 }
 
-// Pre PHP 7 result
+// PHP 7 之前的输出
 1 - 3
 3 -
 
-// PHP 7+ result
+// PHP 7+ 的输出
 1 - 1
 2 - 1
 3 - 1
 ```
 
-When by-value semantics are used, the array being iterated over is now not
-modified in-place. `current()` also now has defined behaviour, where it will
-always begin at the start of the array.
+当按值迭代语法使用时，被迭代的数组不是被实时修改的，`current()`现在有了明确定义的行为，它将一直指向数组的开始处。
 
-`foreach()` by reference on arrays and objects and by value on objects
+`foreach()` 按引用编译数组和对象，与按值遍历对象
+
 ```PHP
 $array = [1,2,3];
 
@@ -907,20 +882,18 @@ foreach($array as &$val) {
     echo "{$val} - ", current($array), PHP_EOL;
 }
 
-// Pre PHP 7 result
+//PHP 7 之前的结果
 1 - 2
 2 - 3
 3 -
 
-// PHP 7+ result
+// PHP 7+ 结果
 1 - 1
 2 - 1
 3 - 1
 ```
+`current()`函数不再被 `foreach()`在数组的迭代所影响。 并且嵌套的按引用传递的 `foreach()` 迭代能彼此独立工作：
 
-The `current()` function is no longer affected by `foreach()`'s iteration on
-the array. Also, nested `foreach()`'s using by-reference semantics work
-independently from each other now:
 ```PHP
 $array = [1,2,3];
 
@@ -933,12 +906,12 @@ foreach($array as &$val) {
     }
 }
 
-// Pre PHP 7 result
+// PHP 7 之前的结果
 1
 1
 1
 
-// PHP 7+ result
+// PHP 7+ 的结果
 1
 1
 1
@@ -948,13 +921,14 @@ foreach($array as &$val) {
 ```
 
 **BC Breaks**
- - Any reliance on the old (quirky and undocumented) semantics will no longer work.
+ - 任何依赖于旧的（怪异的和未文档化的）语义的嗲吗将不再能正常工作。
 
 RFC: [Fix "foreach" behavior](https://wiki.php.net/rfc/php7_foreach)
 
-### Changes to `list()`'s Behaviour
+### 修改 `list()` 的行为
 
-The `list()` function was documented as not supporting strings, however in few cases strings could have been used:
+旧的文档中，`list()`函数不支持strings，然而在少数的情况下，字符串仍可以使用：
+
 ```PHP
 // array dereferencing
 $str[0] = 'ab';
@@ -981,9 +955,10 @@ echo $a; // a
 echo $b; // b
 ```
 
-This has now been changed making string usage with `list()` forbidden in all cases.
+现在上面所列出来的情况下都**不允许**对stirng使用 `list()`。
 
-Also, empty `list()`'s are now a fatal error, and the order of assigning variables has been changed to left-to-right:
+并且空的 `list()`现在会导致一个致命错误，对变量的赋值修改为从左到右了：
+
 ```PHP
 $a = [1, 2];
 list($a, $b) = $a;
@@ -999,28 +974,19 @@ list($a, $b) = $b;
 ```
 
 **BC Breaks**
- - Making `list()` equal to any non-direct string value is no longer possible.
-   `null` will now be the value for the variable `$a` and `$b` in the above
-examples
- - Invoking `list()` without any variables will cause a fatal error
- - Reliance upon the old right-to-left assignment order will no longer work
+ - 使 `list()` 等于任何非直接字符串不再允许。在上面的例子中 `$a` 和 `$b` 的值都将是`null`。
+ - 调用`list()`而没有任何的变量将导致一个致命的错误。
+ - 任何依赖于旧的从右至左赋值的代码将不再正常工作。
 
 RFC: [Fix list() behavior inconsistency](https://wiki.php.net/rfc/fix_list_behavior_inconsistency)
 
 RFC: [Abstract syntax tree](https://wiki.php.net/rfc/abstract_syntax_tree)
 
-### Changes to Division by Zero Semantics
+### 改变除数为0的语义
 
-Prior to PHP 7, when a divisor was 0 for either the divide (/) or modulus (%) operators,
-an E_WARNING would be emitted and `false` would be returned. This was nonsensical for
-an arithmetic operation to return a boolean in some cases, and so the behaviour has been
-rectified in PHP 7.
+在PHP 7之前，当除数是0时，不管是对除法（/）还是取余（%）运算符，都会触发一个 E_WARNING 同时返回false。在很多情况下，对于一个算术运算符返回一个布尔值是没有意义的（荒谬的），所以在PHP 7中该行为被改正过来了。
 
-The new behaviour causes the divide operator to return a float as either +INF, -INF, or
-NAN. The modulus operator E_WARNING has been removed and (alongside the new `intdiv()`
-function) will throw a `DivisionByZeroError` exception. In addition, the `intdiv()`
-function may also throw an `ArithmeticError` when valid integer arguments are supplied
-that cause an incorrect result (due to integer overflow).
+除数为0的行为将返回一个浮点数，即 +INF，-INF或者NAN中的一个。取余操作符的 E_WARNING 被移除（和新的`intdiv()`函数看齐），而是抛出一个 `DivisionByZeroError` 异常。此外，当一个有效的整形参数被提供而导致一个不正确的结果（由整数溢出导致）时，`intdiv()`函数也会抛出一个 `ArithmeticError`异常。
 
 ```PHP
 var_dump(3/0); // float(INF) + E_WARNING
@@ -1032,19 +998,15 @@ intdiv(PHP_INT_MIN, -1); // ArithmeticError
 ```
 
 **BC Breaks**
- - The divide operator will no longer return `false` (which could have been silently coerced
- to 0 in an arithmetic operation)
- - The modulus operator will now throw an exception with a 0 divisor instead of returning `false`
+ - 除法操作将不会再返回false（在算术运算中，这可能被转换为0）
+ - 在除数为0时，取余操作现在可能抛出一个异常而不是返回`false`。
 
 RFC: No RFC available
 
-### Fixes to Custom Session Handler Return Values
+### 修复自定义session handler的返回值
 
-When implementing custom session handlers, predicate functions from the
-`SessionHandlerInterface` that expect a `true` or `false` return value did not
-behave as expected. Due to an error in the previous implementation, only a `-1`
-return value was considered false - meaning that even if the boolean
-`false` was used to denote a failure, it was taken as a success:
+当实现一个自定义的session处理程序时，`SessionHandlerInterface`的预测函数期待一个`true`或者`false`作为返回值，但它的行为并不符合预期。由于之前实现中的一个错误，只有一个`-1`返回值被认为是false，这意味着即使用于代表失败的布尔值`false`也会认为是成功了。
+
 ```PHP
 <?php
 
@@ -1073,82 +1035,55 @@ session_set_save_handler(new FileSessionHandler());
 session_start(); // doesn't cause an error in pre PHP 7 code
 ```
 
-Now, the above will fail with a fatal error. Having a `-1` return value will
-also continue to fail, whilst `0` and `true` will continue to mean success. Any
-other value returned will now cause a failure and emit an E_WARNING.
+现在，上面的代码会因为一个致命的错误而失败。当`-1`作为返回值时让然会失败，虽然`0`和`true`仍然被认为是成功。而返回其他的任何值都会导致失败并触发一个 E_WARNING。
 
 **BC Breaks**
- - If boolean `false` is returned, it will actually fail now
- - If anything other than a boolean, `0`, or `-1` is returned, it will fail and cause a warning to be emitted
+ - 如果返回`false`的话，现在会实际上失败。
+ - 如果布尔值， 0， -1之外的任何值作为返回值，将会导致失败并触发一个警告信息。
 
 RFC: [Fix handling of custom session handler return values](https://wiki.php.net/rfc/session.user.return-value)
 
-### Deprecation of PHP 4-Style Constructors
+### 返回只用PHP 4风格的构造函数
 
-PHP 4 constructors were preserved in PHP 5 alongside the new `__construct()`.
-Now, PHP 4-style constructors are being deprecated in favour of having only a
-single method (`__construct()`) to be invoked on object creation. This is
-because the conditions upon whether the PHP 4-style constructor was invoked
-caused additional cognitive overhead to developers that could also be confusing
-to the inexperienced.
+PHP 4风格的构造函数在PHP 5中被保留，和新的`__construct()`一起工作。现在PHP 4 风格的构造函数被弃用了，在创建对象是只有一个方法：`__construct()`被调用。这是因为判断PHP 4风格的构造函数是够被调用的条件导致了额外的认知开销，可能使一些没有经验的开发者感到困惑（confusing）
 
-For example, if the class is defined within a namespace or if an
-`__construct()` method existed, then a PHP 4-style constructor was recognised
-as a plain method. If it was defined above an `__construct()` method, then an
-E_STRICT notice would be emitted, but still recognised as a plain method.
+例如，如果一个类定义在命名空间类，或者`__construct`方法存在，那么一个PHP 4风格的构造函数被识别为一个普通方法。如果它被定义在`__construct()`方法之前，那么会触发一个 `E_STRICT` 消息，但仍然会被当作一个普通方法。命名空间中的类不识别和类同名的函数作为构造函数，而PHP 7中即使不是在命名空间中定义的类也不会将与函数同名的函数识别为构造函数，而只将 `__construct()`作为构造函数。
 
-Now in PHP 7, if the class is not in a namespace and there is no
-`__construct()` method present, the PHP 4-style constructor will be used as a
-constructor but an E_DEPRECATED will be emitted. In PHP 8, the PHP 4-style
-constructor will always be recognised as a plain method and the E_DEPRECATED
-notice will disappear.
+在 PHP 7中，如果类没有在命名空间下，并且没有定义`__construct()` 方法，那么PHP 4风格的构造函数被用作构造函数，但是会触发一个 `E_DEPRECATED`。在PHP 8中，PHP 4风格的构造器将总是被识别为普通方法，并且`E_DEPRECATED`消息将消失。
 
 **BC Breaks**
- - Custom error handlers may be affected by the raising of E_DEPRECATED
-   warnings. To fix this, simply update the class constructor name to
-`__construct`.
+ - 自定义的错误处理函数可能被 `E_DEPRECATED`警告所影响。为了修复这个问题，简单的讲构造器名更新为 `__construct()`即可。
 
 RFC: [Remove PHP 4 Constructors](https://wiki.php.net/rfc/remove_php4_constructors)
 
-### Removal of date.timezone Warning
+### 移除date.timezone的警告
 
-When any date- or time-based functions were invoked and a default timezone had
-not been set, a warning was emitted. The fix was to simply set the
-`date.timezone` INI setting to a valid timezone, but this forced users to have
-a php.ini file and to configure it beforehand. Since this was the only setting
-that had a warning attached to it, and it defaulted to UTC anyway, the warning
-has now been removed.
+如果默认时区没有设置之前调用了任何与日期和事件相关的函数时，会触发一个警告消息。简单的做法是将INI设置的`date.timezone`为一个有效的时区，但是这要求用户有一个php.ini文件并事先配置它。因为这指示一个触发警告的的设置，并且默认总是设置为 UTC，所以这个警告信息将会被移除。
 
 RFC: [Remove the date.timezone warning](https://wiki.php.net/rfc/date.timezone_warning_removal)
 
-### Removal of Alternative PHP Tags
+### 去除可替代的PHP标签
 
-The alternative PHP tags `<%` (and `<%=`), `%>`, `<script language="php">`, and
-`</script>` have now been removed.
+可替代的PHP标签 `<%` (and `<%=`), `%>`, `<script language="php">`, 和
+`</script>` 被移除了。
 
 **BC Breaks**
- - Code that relied upon these alternative tags needs to be updated to either
-   the normal or short opening and closing tags. This can either be done
-   manually or automated with [this porting script](https://gist.github.com/nikic/74769d74dad8b9ef221b).
+ - 那些依赖于上面这些可替换标签的代码需要更新为普通的或者短的开闭标签，这可以手动修改或者使用[自动脚本](https://gist.github.com/nikic/74769d74dad8b9ef221b)转换。
 
 RFC: [Remove alternative PHP tags](https://wiki.php.net/rfc/remove_alternative_php_tags)
 
-### Removal of Multiple Default Blocks in Switch Statements
+### 移除Switch语句中的多默认块
 
-Previously, it was possible to specify multiple `default` block statements
-within a switch statement (where the last `default` block was only executed).
-This (useless) ability has now been removed and causes a fatal error.
+在以前，switch语句中可以有多个`defaul`t块（只有最后一个`default`块被执行），这种没用的功能现在被移除了，多个`default`块将会导致一个致命的错误。
 
 **BC Breaks**
- - Any code written (or more likely generated) that created switch statements
-   with multiple `default` blocks will now become a fatal error.
+ - 任何在switch语句中使用了多个`default`块的代码现在将导致一个致命错误
 
 RFC: [Make defining multiple default cases in a switch a syntax error](https://wiki.php.net/rfc/switch.default.multiple)
 
-### Removal of Redefinition of Parameters with Duplicate Names
+### 移除参数列表中重名参数的重定义
 
-Previously, it was possible to specify parameters with duplicate names within a function definition.
-This ability has now been removed and causes a fatal error.
+在以前的版本的函数定义中，可以有重复名字的参数，这个能力现在被移除了，如果存在重名的参数现在将导致一个致命错误。
 
 ```PHP
 function foo($version, $version)
@@ -1166,11 +1101,12 @@ Fatal error: Redefinition of parameter $version in /redefinition-of-parameters.p
 ```
 
 **BC Breaks**
- - Function parameters with duplicate name will now become a fatal error.
+ - 有重名参数的函数现在将导致一个错误。
 
-### Removal of Dead Server APIs
+### 移除已经Dead的服务器API
 
-The following SAPIs have been removed from the core (most of which have been moved to PECL):
+下列SAPIs已经从核心中移除，大部分已经从PECL中移除了：
+
 - sapi/aolserver
 - sapi/apache
 - sapi/apache_hooks
@@ -1193,121 +1129,112 @@ The following SAPIs have been removed from the core (most of which have been mov
 
 RFC: [Removal of dead or not yet PHP7 ported SAPIs and extensions](https://wiki.php.net/rfc/removal_of_dead_sapis_and_exts)
 
-### Removal of Hex Support in Numerical Strings
+### 移除数字字符串的十六进制支持
 
-A Stringy hexadecimal number is no longer recognised as numerical.
+一个十六进制数字的字符串不再认为是数字的（numerical）。
+
 ```PHP
 var_dump(is_numeric('0x123'));
 var_dump('0x123' == '291');
 echo '0x123' + '0x123';
 
-// Pre PHP 7 result
+// PHP 7 之前
 bool(true)
 bool(true)
 582
 
-// PHP 7+ result
+// PHP 7+
 bool(false)
 bool(false)
 0
 ```
 
-The reason for this change is to promote better consistency between the
-handling of stringy hex numbers across the language. For example, explicit
-casts do not recognise stringy hex numbers:
+这么做的原因是为了推进在语言层面对处理十六进制字符串的一致性。例如，下面指定的转换并不会视为十六进制数字符串：
+
 ```PHP
 var_dump((int) '0x123'); // int(0)
 ```
 
-Instead, stringy hex numbers should be validated and converted using the `filter_var()` function:
+作为替代，字符串的十六进制字符应该用`filter_var()`函数来验证和转换：
+
 ```PHP
 var_dump(filter_var('0x123', FILTER_VALIDATE_INT, FILTER_FLAG_ALLOW_HEX)); // int(291)
 ```
 
 **BC Breaks**
- - This change affects the `is_numeric()` function and various operators, including `==`, `+`, `-`, `*`, `/`, `%`, `**`, `++`, and `--`
+ - 这一改变影响了 `is_numeric()` 函数和很多操作符，包括 `==`, `+`, `-`, `*`, `/`, `%`, `**`, `++`, 和 `--`
 
 RFC: [Remove hex support in numeric strings](https://wiki.php.net/rfc/remove_hex_support_in_numeric_strings)
 
-### Removal of Deprecated Functionality
+### 移除过期的功能
 
-All Deprecated functionality has been removed, most notably:
- - The original mysql extension (ext/mysql)
- - The ereg extension (ext/ereg)
+
+所有标记为过期的功能都被移除了，最值得一提的包括：
+
+ - 原生mysql扩展(ext/mysql)
+ - ereg扩展 (ext/ereg)
  - Assigning `new` by reference
- - Scoped calls of non-static methods from an incompatible `$this` context
-   (such as `Foo::bar()` from outside a class, where `bar()` is not a static
-method)
+ - 在不合适的`$this`上下文调用一个非静态方法。 (例如从类外调用 `Foo::bar()`，而 `bar()` 不是一个静态方法)
 
 **BC Breaks**
- - Any code that ran with deprecation warnings in PHP 5 will no longer work (you were warned!)
+ - 任何在PHP 5中运行有已过期警告的代码都将不能工作。(you were warned!)
 
 RFC: [Remove deprecated functionality in PHP 7](https://wiki.php.net/rfc/remove_deprecated_functionality_in_php7)
 
 ### Reclassification and Removal of E_STRICT Notices
 
-E_STRICT notices have always been a bit of a grey area in their meaning. This
-changes removes this error category altogether and either: removes the E_STRICT
-notice, changes it to an E_DEPRECATED if the functionality will be removed in
-future, changes it to an E_NOTICE, or promotes it to an E_WARNING.
+E_STRICT消息总是灰色领域的意思。 这一改变溢出了这一错误分类。 无论是说移除 `E_STRICT`消息，或者说是将它改为 `E_DEPRECATED`,或是修改为 E_NOTICE了，或者是提升为一个E_WARNING了。
 
 **BC Breaks**
- - Because E_STRICT is in the lowest severity error category, any error
-   promotions to an E_WARNING may break custom error handlers
+ - 因为E_STRICT是最低的严重错误类别，任何错误提升为`E_WARNING`都可能导致破坏自定义的错误处理程序。
 
 RFC: [Reclassify E_STRICT notices](https://wiki.php.net/rfc/reclassify_e_strict)
 
-### Deprecation of Salt Option for `password_hash()`
+###  为`password_hash()`函数设置盐的选项过期
 
-With the introduction of the new password hashing API in PHP 5.5, many began
-implementing it and generating their own salts. Unfortunately, many of these
-salts were generated from cryptographically insecure functions like mt_rand(),
-making the salt far weaker than what would have been generated by default.
-(Yes, a salt is always used when hashing passwords with this new API!) The option to
-generate salts have therefore been deprecated to prevent developers from
-creating insecure salts.
+随着在PHP 5.5中引入了新的密码哈希API，许多人开始实现它并自己生产盐。不幸的是，生成的这些盐许多都是来自密码学不安全的函数，比如 `mt_rand()`，这使得这些盐远比默认生成的盐要弱！（是的，使用这个新的API来哈希密码默认会使用盐）。为了防止开发正生成不安全的盐，生成盐的选项在PHP 7中被deprecated了。
 
 RFC: no RFC available
 
-### Error on Invalid Octal Literals
+### 无效的八进制字面量的错误
 
-Invalid octal literals will now cause a parse error rather than being
-truncated and silently ignored.
+无效的八进制字面量现在会导致一个解析错误而不是静默被截断而被忽略。
 
 ```PHP
 echo 0678; // Parse error:  Invalid numeric literal in...
 ```
 
 **BC Breaks**
- - Any invalid octal literals in code will now cause parse errors
+ - 任何无效的八进制字面量会导致解析错误。
 
 RFC: no RFC available
 
-### `substr()` Return Value Change
+### `substr()`返回值修改
 
-`substr()` will now return an empty string instead of `false` when the start
-position of the truncation is equal to the string length:
+当进行截断的开始位置等于字符的长度时，`substr()`现在将返回一个空的字符串而不是`false`。 
+
 ```PHP
 var_dump(substr('a', 1));
 
-// Pre PHP 7 result
+// PHP 7 之前
 bool(false)
 
-// PHP 7+ result
+// PHP 7+
 string(0) ""
 ```
 
-`substr()` may still return `false` in other cases, however.
+然而，在其他情况`substr()`仍然可能返回`false`。
+
 
 **BC Breaks**
- - Code that strictly checked for a `bool(false)` return value may now be
- semantically invalid
+ - 那些严格检查返回值为`bool(false)`的代码现在可能是语义无效的了。
+
 
 RFC: no RFC available
 
 ## FAQ
 
-### What happened to PHP 6?
+### PHP 6发生了什么
 
 PHP 6 was the major PHP version that never came to light. It was supposed to
 feature full support for Unicode in the core, but this effort was too ambitious
