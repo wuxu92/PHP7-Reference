@@ -26,7 +26,7 @@ PHP 7 在 [December 3rd, 2015]
 * [支持 `define()` 定义数组常量](#support-for-array-constants-in-define)
 * [新增的反射类](#reflection-additions)
 
-**[改动](#changes)**
+**[改动](#改变)**
 * [放松保留字的限制](#loosening-reserved-word-restrictions)
 * [同一变量格式](#uniform-variable-syntax)
 * [引擎中的异常](#exceptions-in-the-engine)
@@ -145,7 +145,7 @@ var_dump(add('2', 3)); // Fatal error: Uncaught TypeError: Argument 1 passed to 
 
 注意，**只有**在*调用上下文*执行类型检查时才会适用这些规则，这意味着严格类型检查只在函数/方法调用时使用，而在它们的定义处不使用。在上面的例子中，两个函数可以定义在严格或者强制模式的文件中，但是，只要是它们在声明了严格模式的文件中被调用，就会使用严格类型规则。
 
-**BC Breaks**
+**BC Breaks（Backward compatibility breaks：打破向后兼容）**
  - 现在 `int`, `string`, `float`, and `bool` 不再允许作为类名出现。
 
 
@@ -413,12 +413,10 @@ RFC: [Expectations](https://wiki.php.net/rfc/expectations)
 
 ### Group `use` Declarations
 
-This gives the ability to group multiple `use` declarations according to the
-parent namespace. This seeks to remove code verbosity when importing multiple
-classes, functions, or constants that come under the same namespace.
+现在的`use`声明允许根据父命令空间一次导入多个值，这一特性是为了减少引入同一命名空间下的类、函数或者常量时造成的代码冗余。
 
 ```PHP
-// Pre PHP 7 code
+// PHP 7 之前
 use some\namespace\ClassA;
 use some\namespace\ClassB;
 use some\namespace\ClassC as C;
@@ -431,7 +429,7 @@ use const some\namespace\ConstA;
 use const some\namespace\ConstB;
 use const some\namespace\ConstC;
 
-// PHP 7+ code
+// PHP 7+ 
 use some\namespace\{ClassA, ClassB, ClassC as C};
 use function some\namespace\{fn_a, fn_b, fn_c};
 use const some\namespace\{ConstA, ConstB, ConstC};
@@ -439,13 +437,9 @@ use const some\namespace\{ConstA, ConstB, ConstC};
 
 RFC: [Group use Declarations](https://wiki.php.net/rfc/group_use_declarations)
 
-### Generator Return Expressions
+### 生成器返回表达式
 
-This feature builds upon the generator functionality introduced into PHP 5.5.
-It enables for a `return` statement to be used within a generator to enable for
-a final *expression* to be returned (return by reference is not allowed). This
-value can be fetched using the new `Generator::getReturn()` method, which may
-only be used once the generator has finishing yielding values.
+这个特性基于PHP 5.5引入的生成器功能，该功能允许在一个生成器（generator）内使用一个`return`语句，以此使返回的最后一个表达式返回（不允许返回引用）。这个值可以使用新的 `Generator::getReturn()`方法获取，不过需要在生成器已经返回之后使用（即generator returned之后）。
 
 ```PHP
 // IIFE syntax now possible - see the Uniform Variable Syntax subsection in the Changes section
@@ -459,6 +453,7 @@ $gen = (function() {
 foreach ($gen as $val) {
     echo $val, PHP_EOL;
 }
+// 此时generator已经关闭
 
 echo $gen->getReturn(), PHP_EOL;
 
@@ -468,24 +463,15 @@ echo $gen->getReturn(), PHP_EOL;
 // 3
 ```
 
-Being able to explicitly return a final value from a generator is a handy
-ability to have. This is because it enables for a final value to be returned by
-a generator (from perhaps some form of coroutine computation) that can be
-specifically handled by the client code executing the generator. This is far
-simpler than forcing the client code to firstly check whether the final value
-has been yielded, and then if so, to handle that value specifically.
+能够明确地返回生成器的最终值是一个很便利的功能，因为generator返回最终的值（也许来自某种形式的协同计算）能够被执行生成器的客户端专门处理。这和客户端代码需要首先检查最终值是否已经产生然后在使用最终的值相比，更加简单了
 
 RFC: [Generator Return Expressions](https://wiki.php.net/rfc/generator-return-expressions)
 
-### Generator Delegation
+### 生成器委托
 
-Generator delegation builds upon the ability of being able to return
-expressions from generators. It does this by using an new syntax of `yield from
-<expr>`, where <expr> can be any `Traversable` object or array. This <expr>
-will be advanced until no longer valid, and then execution will continue in the
-calling generator. This feature enables `yield` statements to be broken down
-into smaller operations, thereby promoting cleaner code that has greater
-reusability.
+生成器现在能自动委托给另一个生成器、可遍历对象或者数组，直接使用 `yield from`，而不需要在最外层的生成器书写模版了。
+
+生成器委托基于生成器能返回表达式的能力。使用新的语法 `yield from <expr>`, <expr>还可以是可遍历对象或数组。 <expr>将会被遍历，之后在返回调用的生成器继续执行。这个特性允许 `yield`表达式被切分更细，从而促进代码更加干净，有更好的可复用性。
 
 ```PHP
 function gen()
@@ -521,46 +507,39 @@ echo $gen->getReturn();
 
 RFC: [Generator Delegation](https://wiki.php.net/rfc/generator-delegation)
 
-### Integer Division with `intdiv()`
+### 使用 `intdiv()` 做整数除法
 
-The `intdiv()` function has been introduced to handle division where an integer is to be returned.
+引入函数`intdiv()`用于处理需要返回一个整数的整数除法操作。
 
 ```PHP
 var_dump(intdiv(10, 3)); // int(3)
 ```
 
 **BC Breaks**
- - Functions in the global namespace must not be called `intdiv`.
+ - 全局命令空间下的函数不能命名为 `intdiv`.
 
 RFC: [intdiv()](https://wiki.php.net/rfc/intdiv)
 
-### `session_start()` Options
+### `session_start()` 选项
 
-This feature gives the ability to pass in an array of options to the
-`session_start()` function. This is used to set session-based php.ini options:
+这个特性允许传入一个选项的数组到 `session_start()`函数，这用于设置基于会话的 php.ini 选项：
 
 ```PHP
 session_start(['cache_limiter' => 'private']); // sets the session.cache_limiter option to private
 ```
 
-This feature also introduces a new php.ini setting (`session.lazy_write`) that
-is, by default, set to true and means that session data is only rewritten if it
-changes.
+这个特性也引入了一个新的php.ini设置（`session.lazy_write`）,默认情况下设置为 true，意味着session数据只在发生变化时才写入。
 
 RFC: [Introduce session_start() Options](https://wiki.php.net/rfc/session-lock-ini)
 
-### `preg_replace_callback_array()` Function
+### `preg_replace_callback_array()` 函数
 
-This new function enables code to be written more cleanly when using the
-`preg_replace_callback()` function. Prior to PHP 7, callbacks that needed to be
-executed per regular expression required the callback function (second
-parameter of `preg_replace_callback()`) to be polluted with lots of branching
-(a hacky method at best).
+使用新的 `preg_replace_callback()`函数能写出更加干净的代码。在PHP 7之前，每一个正则表达式都需要执行一次的回调函数（`preg_replace_callback()`函数的第二个参数）常常需要写很多的分支判断。
 
-Now, callbacks can be registered to each regular expression using an associative
-array, where the key is a regular expression and the value is a callback.
+现在能用关联数组注册回调了，使用正则表达式作为键，使对应的回调作为值注册到正则表达式。
 
-Function Signature:
+函数签名如下:
+
 ```
 string preg_replace_callback_array(array $regexesAndCallbacks, string $input);
 ```
@@ -572,7 +551,7 @@ $input = <<<'end'
 $a = 3; // variable initialisation
 end;
 
-// Pre PHP 7 code
+// PHP 7 之前
 preg_replace_callback(
     [
         '~\$[a-z_][a-z\d_]*~i',
@@ -597,7 +576,7 @@ preg_replace_callback(
     $input
 );
 
-// PHP 7+ code
+// PHP 7+
 preg_replace_callback_array(
     [
         '~\$[a-z_][a-z\d_]*~i' => function ($match) use (&$tokenStream) {
@@ -625,31 +604,26 @@ preg_replace_callback_array(
 
 RFC: [Add preg_replace_callback_array Function](https://wiki.php.net/rfc/preg_replace_callback_array)
 
-### CSPRNG Functions
+### CSPRNG（密码学安全伪随机数构建器）函数
 
-This feature introduces two new functions for generating cryptographically
-secure integers and strings. They expose simple APIs and are
-platform-independent.
+这一特性引入了两个新的函数，用于生成安全加密的整数和字符串。它们暴露出简单的API，并且它们是平台独立的。
 
-Function signatures:
+函数签名:
 ```
 string random_bytes(int length);
 int random_int(int min, int max);
 ```
 
-Both functions will emit an `Error` exception if a source of sufficient
-randomness cannot be found.
+如果不能找到可用的随机性来源，两个函数都会抛出一个 `Error` 异常。
 
 **BC Breaks**
- - Functions in the global namespace must not be called `random_int` or `random_bytes`.
+ - 全局命名空间下的函数不能命名为 `random_int` 或者 `random_bytes`.
 
 RFC: [Easy User-land CSPRNG](https://wiki.php.net/rfc/easy_userland_csprng)
 
-### Support for Array Constants in `define()`
+### 支持 `define()` 定义数组常量
 
-The ability to define array constants was introduced in PHP 5.6 using the
-`const` keyword. This ability has now been applied to the `define()` function
-too:
+在PHP 5.6 引入了使用 `const`关键字定义数组常量，在PHP 7中，可以使用 `define()`函数定义数组常量了。
 
 ```PHP
 define('ALLOWED_IMAGE_EXTENSIONS', ['jpg', 'jpeg', 'gif', 'png']);
@@ -657,10 +631,9 @@ define('ALLOWED_IMAGE_EXTENSIONS', ['jpg', 'jpeg', 'gif', 'png']);
 
 RFC: no RFC available
 
-### Reflection Additions
+### 反射增强
 
-Two new reflection classes have been introduced in PHP 7. The first is
-`ReflectionGenerator`, which is used for introspection on generators:
+PHP 7引入了两个新的反射类，第一个是 `ReflectionGenerator`，用于generator的内省（introspection）。
 
 ```PHP
 class ReflectionGenerator
@@ -675,8 +648,7 @@ class ReflectionGenerator
 }
 ```
 
-The second is `ReflectionType` to better support the scalar and return type
-declaration features:
+第二个是 `ReflectionType`，更好的支持常量和返回值类型声明的特性。
 
 ```PHP
 class ReflectionType
@@ -687,7 +659,8 @@ class ReflectionType
 }
 ```
 
-Also, two new methods have been introduced into `ReflectionParameter`:
+同时，`ReflectionParameter`引入了两个新的方法：
+
 ```PHP
 class ReflectionParameter
 {
@@ -697,7 +670,8 @@ class ReflectionParameter
 }
 ```
 
-As well as two new methods in `ReflectionFunctionAbstract`:
+`ReflectionFunctionAbstract`也引入了两个新方法:
+
 ```PHP
 class ReflectionFunctionAbstract
 {
@@ -713,32 +687,26 @@ class ReflectionFunctionAbstract
 
 RFC: no RFC available
 
-## Changes
+## 改变
 
-### Loosening Reserved Word Restrictions
+### 放松保留字的限制
 
-Globally reserved words as property, constant, and method names within classes,
-interfaces, and traits are now allowed. This reduces the surface of BC breaks
-when new keywords are introduced and avoids naming restrictions on APIs.
+现在，全局保留字允许作为类，接口和traits的属性，常量和方法名。这减少了当新的关键字被引入和避免API命名限制时导致的对向后兼容的破坏。
 
-This is particularly useful when creating internal DSLs with fluent interfaces:
+这个改变在使用连贯接口创建内部DSLs时很有用。
+
 ```PHP
 // 'new', 'private', and 'for' were previously unusable
 Project::new('Project Name')->private()->for('purpose here')->with('username here');
 ```
 
-The only limitation is that the `class` keyword still cannot be used as a
-constant name, otherwise it would conflict with the class name resolution
-syntax (`ClassName::class`).
+唯一的限制是，`class`关键字仍然不能用作常量名，因为这样可能和类名解析语法（`ClassName::ckass`）冲突。
 
 RFC: [Context Sensitive Lexer](https://wiki.php.net/rfc/context_sensitive_lexer)
 
-### Uniform Variable Syntax
+### 统一变量语法
 
-This change brings far greater orthogonality to the variable operators in PHP.
-It enables for a number of new combinations of operators that were previously
-disallowed, and so introduces new ways to achieve old operations in terser
-code.
+这一改变为PHP变量操作符带来更强的正交性，它允许很多以前不允许的新的操作符组合用法，并因此引入了相比旧的方法更加简洁的代码。
 
 ```PHP
 // nesting ::
@@ -748,13 +716,9 @@ $foo::$bar::$baz // access the property $baz of the $foo::$bar property
 foo()() // invoke the return of foo()
 
 // operators on expressions enclosed in ()
-(function () {})() // IIFE syntax from JS
+(function () {})() // IIFE(Immediately-Invoked Function Expression) syntax from JS
 ```
-
-The ability to arbitrarily combine variable operators came from reversing the
-evaluation semantics of indirect variable, property, and method references. The
-new behaviour is more intuitive and always follows a left-to-right evaluation
-order:
+这种随意组合变量操作符的能力来自于转变直接变量，属性和方法应用的求值语义。新的行为更加符合直觉并且允许从左到右的求值顺序。
 
 ```PHP
                         // old meaning            // new meaning
@@ -765,21 +729,13 @@ Foo::$bar['baz']()      Foo::{$bar['baz']}()      (Foo::$bar)['baz']()
 ```
 
 **BC Breaks**
- - Code that relied upon the old evaluation order must be rewritten to
-   explicitly use that evaluation order with curly braces (see middle column of
-the above). This will make the code both forwards compatible with PHP 7.x and
-backwards compatible with PHP 5.x
+ - 依赖于旧的求值顺序的代码需要使用大括号重写来明确求值的顺序（见上面示例的中间一列）。这样才能同时向前兼容 PHP 7.x 和向后兼容PHP 5.x
 
 RFC: [Uniform Variable Syntax](https://wiki.php.net/rfc/uniform_variable_syntax)
 
-### Exceptions in the Engine
+### 引擎中的异常
 
-Exceptions in the engine converts many fatal and recoverable fatal errors into
-exceptions. This enables for graceful degradation of applications through
-custom error handling procedures. It also means that cleanup-driven features
-such as the `finally` clause and object destructors will now be executed.
-Furthermore, by using exceptions for application errors, stack traces will be
-produced for additional debugging information.
+引擎中的异常将许多致命和可恢复的致命错误转换为普通异常。这允许应用通过自定义错误处理程序实现优雅降级。同时像`finally`子句和析构函数这样的 cleanup-driven 特性将能被执行。通过使用应用错误的异常，将执行堆栈跟踪并产生更多的调试信息。
 
 ```PHP
 function sum(float ...$numbers) : float
@@ -794,7 +750,8 @@ try {
 }
 ```
 
-The new exception hierarchy is as follows:
+新的异常层级结构如下：
+
 ```
 interface Throwable
     |- Exception implements Throwable
@@ -807,18 +764,15 @@ interface Throwable
             |- DivisionByZeroError extends ArithmeticError
 ```
 
-See the [Throwable Interface](#throwable-interface) subsection in the Changes
-section for more information on this new exception hierarchy.
+查看 [可抛出的接口](#可抛出的接口) 节了解更多关于新的异常结构的信息。
 
 **BC Breaks**
- - Custom error handlers used for handling (and typically ignoring) recoverable
-   fatal errors will not longer work since exceptions will now be thrown
- - Parse errors occurring in `eval()`ed code will now become exceptions,
-   requiring them to be wrapped in a `try...catch` block
+ - 用于处理可恢复致命错误的用户错误处理程序将不会有效，因为异常不再被抛出。
+ - `eval()`执行代码的解析错误现在作为异常抛出，这要求它们使用 `try...catch`块包围。
 
 RFC: [Exceptions in the Engine](https://wiki.php.net/rfc/engine_exceptions_for_php7)
 
-### Throwable Interface
+### 可抛出的接口
 
 This change affects PHP's exception hierarchy due to the introduction of
 [exceptions in the engine](#exceptions-in-the-engine). Rather than placing
